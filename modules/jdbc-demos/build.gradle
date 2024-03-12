@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+}
+
+//plugins {
+//    id 'application'
+//}
+
+group 'org.example'
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+//application {
+//    mainClass = "jdbc.dev.demos.DatabaseConnector"
+//}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+dependencies {
+//    runtimeOnly rootProject.files("libs/postgresql-42.6.0.jar") // runtimeOnly
+//    implementation rootProject.files("libs/tomcat-jdbc-10.1.7.jar") // compile and runtime
+//    runtimeOnly rootProject.files("libs/tomcat-juli-10.1.7.jar") // runtimeOnly
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc
+    implementation 'org.apache.tomcat:tomcat-jdbc:10.1.7'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task runWithExec(type: Exec) {
+    dependsOn build
+    group = "Execution"
+    description = "Run the main class with ExecTask"
+    commandLine "java", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "jdbc.demos.DatabaseConnector"
+}
+
+task printSourceSetInformation() {
+
+    doLast {
+        sourceSets.each { srcSet ->
+            println "["+srcSet.name+"]"
+            print "-->Source directories: " + srcSet.allJava.srcDirs + "\n"
+            print "-->Output directories: " + srcSet.output.classesDirs.files + "\n"
+            print "-->Compile classpath:\n"
+            srcSet.compileClasspath.files.each {
+                print "  " + it.path + "\n"
+            }
+            print "-->Runtime classpath:\n"
+            srcSet.runtimeClasspath.files.each {
+                print "  " + it.path + "\n"
+            }
+            println ""
+        }
+    }
+}

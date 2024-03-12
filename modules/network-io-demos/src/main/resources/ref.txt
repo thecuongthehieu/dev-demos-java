@@ -1,0 +1,3 @@
+https://programmer.group/java-network-io-bio-nio-aio.html
+
+https://www.baeldung.com/netty
