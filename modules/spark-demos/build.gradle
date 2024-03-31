@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.spark:spark-core_2.12:3.5.1'
+    implementation 'org.apache.spark:spark-mllib_2.12:3.5.1'
+}
+
+compileJava.options.fork = true
+compileJava.options.forkOptions.executable = '/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac'
+
+task runWithExec(type: Exec) {
+    dependsOn build
+    group = "Execution"
+    description = "Run the main class with ExecTask"
+    commandLine "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "-Dspark.master=local[*]", "spark.demos.WordCountExample", "4", "./src/main/resources/sentence_small.txt"
+}
