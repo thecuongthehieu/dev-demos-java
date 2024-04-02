@@ -1,4 +1,4 @@
-package clean.code.utils;
+package circus.monitor;
 
 public class ProducerConsumerMonitor {
 	private static class ProdCons {
