@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.8.13'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // https://mvnrepository.com/artifact/io.grpc/grpc-netty
+    implementation("io.grpc:grpc-netty:1.68.0")
+    // https://mvnrepository.com/artifact/io.grpc/grpc-protobuf
+    implementation("io.grpc:grpc-protobuf:1.68.0")
+    // https://mvnrepository.com/artifact/io.grpc/grpc-stub
+    implementation("io.grpc:grpc-stub:1.68.0")
+    //
+    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.52.1'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {grpc {}}
+    }
+    // default proto plugin generate stub in build folder
+    // change the stub generate folder
+    //generatedFilesBaseDir = "$projectDir/src/generated"
+}
+
+sourceSets{
+    main{
+        java{
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+task runServer(type: Exec) {
+    dependsOn build
+    group = "Execution"
+    description = "Run the main class with ExecTask"
+    commandLine "java", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "grpc.demos.server.GrpcServer"
+}
+
+task runClient(type: Exec) {
+    dependsOn build
+    group = "Execution"
+    description = "Run the main class with ExecTask"
+    commandLine "java", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), "grpc.demos.client.GrpcClient"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+}
